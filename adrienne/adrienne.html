@@ -1,21 +1,34 @@
 <!-- 
     To serve this page locally with Python 3 HTTP server, run:
     python3 -m http.server 8080 --bind 127.0.0.1 in newbie_hackathon_group2
-    Then open: http://127.0.0.1:8080/emily.html
+    Then open: http://127.0.0.1:8080/adrienne.html
 -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Tony's Page</title>
-    <link rel="stylesheet" href="tony.css" />
+    <title>Adrienne's Page</title>
+    <link rel="stylesheet" href="adrienne.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
   </head>
   <body>
-    <h1>Tony</h1>
+    <h1 class="bubbly-heading h1">Adrienne</h1>
+    <p class="normal-text">
+      This is some bold, bubbly, Comic Sans text with a shadow! This is some bold, bubbly, Comic Sans text with a shadow! This is some bold, bubbly, Comic Sans text with a shadow! 
+    </p>
+    <div class = "imagespace">
+      <img src="./flower.jpg" id="flower" width="400"/>
+    </div>
+
+
+
+
   </body>
   <footer>
-    <button onclick="location.href='/home/index.html'">
+    <div class = "buttonspace">
+      <button onclick="location.href='../home/index.html'">
       Back to Home Page
-    </button>
+      </button>
+    </div>
   </footer>
 </html>

@@ -1,0 +1,53 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle, #ffd1d9 50%, #ffaed7 100%);
+}
+button {
+  color: #ff1493;  
+  background-color: #fff;
+  border: 1px solid #ff1493; 
+  text-align: center;
+  font-family: 'Chewy';
+}
+
+.buttonspace {
+    text-align: center;
+}
+    
+.imagespace {
+    display: flex;
+    justify-content: center;
+}
+/* Apply this only to headings and titles you want bubbly */
+
+.bubbly-heading {
+  font-family: 'Chewy', cursive;
+  color: #fff;
+  text-shadow:
+    2px 2px 0 #ff69b4,
+    4px 4px 0 #ff1493;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* Optional: Add different sizes for different heading levels */
+.bubbly-heading.h1 {
+  font-size: 3.5rem;
+}
+
+.bubbly-heading.h2 {
+  font-size: 2.5rem;
+}
+
+.bubbly-heading.h3 {
+  font-size: 2rem;
+}
+
+.normal-text {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(247, 136, 193, 0);
+  margin: 40px;
+}
