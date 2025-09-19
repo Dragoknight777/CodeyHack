@@ -8,9 +8,9 @@
 </head>
 <body>
     <header>
-        <h1>Daniel Lin</h1>
+        <h1>Daniel</h1>
     </header>
-    
+
     <section class="gallery-container">
         <div class="gallery-track" id="galleryTrack">
             <!-- Original images -->
@@ -122,21 +122,26 @@
                 const itemWidth = 480;
                 const itemCount = originalItems.length;
                 const setWidth = itemCount * itemWidth;
+                const totalSets = Math.ceil(window.innerWidth / setWidth) + 2;
+                const midPoint = -(totalSets / 2) * setWidth;
                 
-                // Smoothly adjust position if we've scrolled too far
-                if (currentTranslateX > setWidth / 2) {
-                    currentTranslateX -= setWidth;
+                // Calculate how far we are from the midpoint
+                const offset = currentTranslateX - midPoint;
+                const normalizedOffset = Math.abs(offset) % setWidth;
+                
+                if (offset > setWidth) {
+                    // We've scrolled too far right
+                    currentTranslateX = midPoint - (setWidth - normalizedOffset);
                     galleryTrack.style.transition = 'none';
                     updateTransform();
-                    // Re-enable transition after the jump
                     requestAnimationFrame(() => {
                         galleryTrack.style.transition = 'transform 0.3s ease-out';
                     });
-                } else if (currentTranslateX < -setWidth * 1.5) {
-                    currentTranslateX += setWidth;
+                } else if (offset < -setWidth) {
+                    // We've scrolled too far left
+                    currentTranslateX = midPoint + normalizedOffset;
                     galleryTrack.style.transition = 'none';
                     updateTransform();
-                    // Re-enable transition after the jump
                     requestAnimationFrame(() => {
                         galleryTrack.style.transition = 'transform 0.3s ease-out';
                     });
@@ -157,21 +162,25 @@
                 
                 const deltaX = clientX - startX;
                 currentTranslateX = startTranslateX + deltaX;
-                updateTransform();
                 
-                // Check bounds during drag to prevent going too far
+                // Check bounds during drag for infinite scroll
                 const itemWidth = 480;
                 const itemCount = originalItems.length;
                 const setWidth = itemCount * itemWidth;
+                const totalSets = Math.ceil(window.innerWidth / setWidth) + 2;
+                const midPoint = -(totalSets / 2) * setWidth;
                 
-                // Seamlessly loop during drag
-                if (currentTranslateX > setWidth / 2) {
-                    currentTranslateX -= setWidth;
-                    startTranslateX -= setWidth;
-                } else if (currentTranslateX < -setWidth * 1.5) {
-                    currentTranslateX += setWidth;
-                    startTranslateX += setWidth;
+                // Calculate how far we are from the midpoint
+                const offset = currentTranslateX - midPoint;
+                
+                if (Math.abs(offset) > setWidth) {
+                    // Reset position while maintaining relative scroll position
+                    const normalizedOffset = offset % setWidth;
+                    currentTranslateX = midPoint + normalizedOffset;
+                    startTranslateX = currentTranslateX - deltaX;
                 }
+                
+                updateTransform();
             }
             
             function handleEnd() {
