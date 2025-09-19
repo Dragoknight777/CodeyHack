@@ -7,15 +7,91 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Lochan's Page</title>
-    <link rel="stylesheet" href="lochan.css" />
+    <title>Langdon's Page</title>
+  <link rel="stylesheet" href="langdon.css" />
   </head>
   <body>
-    <h1>Lochan</h1>
-  </body>
-  <footer>
-    <button onclick="location.href='/home/index.html'">
+    <h1>Langdon Huynh</h1>
+  <!-- Soccer balls will be created by JavaScript -->
+  <button onclick="location.href='../home/index.html'">
       Back to Home Page
     </button>
-  </footer>
+  <h2>About Me</h2>
+<p>Wasurp! My name is Langdon. I've been playing soccer for 13 years.</p>
+<img src="./content/photo1.JPG" alt="Description" width="800" />
+<p style="text-align:center;">I started playing soccer at AYSO, then played at different teams as I grew older.</p>
+<p style="text-align:center;">At 10, I joined my first comeptitive soccer team starting at the Bronze Level.</p>
+<div class="image-row">
+  <img src="./content/photo2.JPEG" alt="Description" width="500" />
+  <img src="./content/mlsnext.png" alt="Description" width="300" />
+</div>
+<p style="text-align:center;">Over the years I've trained and put in a lot of work to get to the MLS Next level</p>
+<img src="./content/photo3.JPEG" alt="Description" width="700" />
+<p style="text-align:center;">Here's a lil highlight</p>s
+<video width="800" controls>
+  <source src="./content/goal.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<!-- Soccer balls will be created by JavaScript -->
+  <script>
+    const ballCount = 6;
+    const balls = [];
+    const ballSize = 80;
+
+    function createBall() {
+      const ball = document.createElement('div');
+      ball.className = 'soccer-ball';
+      ball.style.background = "url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg') no-repeat center/contain";
+      ball.style.width = ball.style.height = ballSize + 'px';
+      ball.style.position = 'fixed';
+      ball.style.zIndex = 100;
+      ball.style.opacity = 0.85;
+      ball.style.left = Math.random() * (window.innerWidth - ballSize) + 'px';
+      ball.style.top = Math.random() * (window.innerHeight - ballSize) + 'px';
+      document.body.appendChild(ball);
+      balls.push({
+        el: ball,
+        x: parseFloat(ball.style.left),
+        y: parseFloat(ball.style.top),
+  dx: (Math.random() - 0.5) * 3,
+  dy: (Math.random() - 0.5) * 3,
+        curve: Math.random() * 0.2 - 0.1 // Each ball gets a unique curve
+      });
+    }
+
+    for (let i = 0; i < ballCount; i++) createBall();
+
+    function animateBalls() {
+      balls.forEach(ball => {
+  // Fluctuate acceleration randomly in both x and y directions
+  ball.curveX = ball.curveX || (Math.random() * 0.2 - 0.1);
+  ball.curveY = ball.curveY || (Math.random() * 0.2 - 0.1);
+  ball.curveX += (Math.random() - 0.5) * 0.05;
+  ball.curveY += (Math.random() - 0.5) * 0.05;
+  ball.dx += ball.curveX;
+  ball.dy += ball.curveY;
+  // Limit speed
+  ball.dx = Math.max(Math.min(ball.dx, 2), -2);
+  ball.dy = Math.max(Math.min(ball.dy, 2), -2);
+  ball.x += ball.dx;
+  ball.y += ball.dy;
+
+        // Bounce off window edges
+        if (ball.x <= 0 || ball.x >= window.innerWidth - ballSize) {
+          ball.dx *= -1;
+          ball.curveX = Math.random() * 0.2 - 0.1;
+        }
+        if (ball.y <= 0 || ball.y >= window.innerHeight - ballSize) {
+          ball.dy *= -1;
+          ball.curveY = Math.random() * 0.2 - 0.1;
+        }
+
+        ball.el.style.left = ball.x + 'px';
+        ball.el.style.top = ball.y + 'px';
+      });
+      requestAnimationFrame(animateBalls);
+    }
+
+    animateBalls();
+  </script>
 </html>
