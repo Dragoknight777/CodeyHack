@@ -1,205 +1,232 @@
-<!-- 
-    To serve this page locally with Python 3 HTTP server, run:
-    python3 -m http.server 8080 --bind 127.0.0.1 in newbie_hackathon_group2
-    Then open: http://127.0.0.1:8080/emily.html
--->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daniel's Page</title>
-    <link rel="stylesheet" href="./daniel.css" />
-  </head>
-  <body>
-    <h1>Daniel</h1>
-
-    <section class="container">
-      <div class="slider-wrapper">
-        <div class="slider" id="gallery">
-          <img id="piano" src="./images/Piano.jpg" alt="Piano">
-          <img id="marching_band" src="./images/MarchingBand.jpg" alt="Marching Band">
-          <img id="octet" src="./images/Octet.jpg" alt="Octet">
+    <link rel="stylesheet" href="./daniel.css">
+</head>
+<body>
+    <header>
+        <h1>Daniel Lin</h1>
+    </header>
+    
+    <section class="gallery-container">
+        <div class="gallery-track" id="galleryTrack">
+            <!-- Original images -->
+            <div class="gallery-item">
+                <img src="./images/Piano.jpg" alt="Piano">
+            </div>
+            <div class="gallery-item">
+                <img src="./images/MarchingBand.jpg" alt="Marching Band">
+            </div>
+            <div class="gallery-item">
+                <img src="./images/Octet_sproul.jpg" alt="Octet at Sproul">
+            </div>
+            <div class="gallery-item">
+                <img src="./images/Octet.JPG" alt="Octet">
+            </div>
+            <div class="gallery-item">
+                <img src="./images/Chivalry.JPG" alt="Chivalry">
+            </div>
         </div>
-
-        <div class="slider-nav" id="dots">
-          <a href="#piano"></a>
-          <a href="#marching_band"></a>
-          <a href="#octet"></a>
-        </div>
-      </div>
+        
+        <!-- Gradient overlays for fade effect -->
+        <div class="fade-overlay fade-left"></div>
+        <div class="fade-overlay fade-right"></div>
     </section>
 
     <section class="video-container">
-      <video controls>
-        <source src="./images/piano_recital.MP4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+        <video controls>
+            <source src="./images/piano_recital.MP4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </section>
 
     <section class="video-container">
-      <iframe src="https://www.youtube.com/embed/EdQCYR10Vbg?si=74AfYT90Cttwml7q" 
-        title="YouTube video player" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        referrerpolicy="strict-origin-when-cross-origin" 
-        allowfullscreen>
-      </iframe>
+        <iframe src="https://www.youtube.com/embed/EdQCYR10Vbg?si=74AfYT90Cttwml7q" 
+            title="YouTube video player" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin" 
+            allowfullscreen>
+        </iframe>
     </section>
+
+    <section class="video-container">
+        <video controls>
+            <source src="./images/guitar.mov" type="video/quicktime">
+            <source src="./images/guitar.mov" type="video/mp4">
+            <source src="./images/guitar.mov" type="video/webm">
+            Sorry, your browser doesn't support embedded videos. Try converting the .mov file to .mp4 format for better compatibility.
+        </video>
+    </section>
+
+    <footer>
+        <button onclick="location.href='../home/index.html'">
+            Back to Home Page
+        </button>
+    </footer>
 
     <script>
-      const slider = document.getElementById('gallery');
-      const dots   = document.getElementById('dots');
-
-      // ---- ghost slides (yours) ----
-      const originals = Array.from(slider.children);
-      const firstReal = originals[0].cloneNode(true);
-      const lastReal  = originals[originals.length - 1].cloneNode(true);
-      firstReal.removeAttribute('id');
-      lastReal.removeAttribute('id');
-      firstReal.classList.add('ghost');
-      lastReal.classList.add('ghost');
-      slider.insertBefore(lastReal, slider.firstChild);
-      slider.appendChild(firstReal);
-
-      // Width of one slide; recompute on resize
-      const slideW = () => slider.clientWidth;
-      const slideCount = originals.length;
-
-      // Start at first real slide (index 1 counting the leading ghost)
-      function setNoSnapJump(leftPx) {
-        const prevSnap = slider.style.scrollSnapType;
-        const prevBeh  = slider.style.scrollBehavior;
-        slider.style.scrollSnapType = 'none';
-        slider.style.scrollBehavior = 'auto';
-        slider.scrollLeft = leftPx;
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            slider.style.scrollSnapType = prevSnap || 'x mandatory';
-            slider.style.scrollBehavior = prevBeh  || 'smooth';
-            if (typeof after === 'function') after();
-          });
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryTrack = document.getElementById('galleryTrack');
+            const originalItems = Array.from(galleryTrack.children);
+            
+            let currentTranslateX = 0;
+            let isDragging = false;
+            let startX = 0;
+            let startTranslateX = 0;
+            
+            // Clone images for infinite scroll
+            function setupInfiniteScroll() {
+                // Calculate item width including margin
+                const itemWidth = 480; // 450px width + 30px margin
+                const itemCount = originalItems.length;
+                const totalWidth = itemCount * itemWidth;
+                
+                // Create copies before and after for seamless scrolling
+                const copiesNeeded = Math.ceil(window.innerWidth / totalWidth) + 2;
+                
+                // Clear existing clones
+                const clones = galleryTrack.querySelectorAll('.gallery-item.clone');
+                clones.forEach(clone => clone.remove());
+                
+                // Add clones before original items
+                for (let i = 0; i < copiesNeeded; i++) {
+                    for (let j = originalItems.length - 1; j >= 0; j--) {
+                        const clone = originalItems[j].cloneNode(true);
+                        clone.classList.add('clone');
+                        galleryTrack.insertBefore(clone, galleryTrack.firstChild);
+                    }
+                }
+                
+                // Add clones after original items
+                for (let i = 0; i < copiesNeeded; i++) {
+                    originalItems.forEach(item => {
+                        const clone = item.cloneNode(true);
+                        clone.classList.add('clone');
+                        galleryTrack.appendChild(clone);
+                    });
+                }
+                
+                // Start in the middle
+                currentTranslateX = -copiesNeeded * totalWidth;
+                updateTransform();
+            }
+            
+            function updateTransform() {
+                galleryTrack.style.transform = `translateX(${currentTranslateX}px)`;
+            }
+            
+            function checkBounds() {
+                const itemWidth = 480;
+                const itemCount = originalItems.length;
+                const setWidth = itemCount * itemWidth;
+                
+                // Smoothly adjust position if we've scrolled too far
+                if (currentTranslateX > setWidth / 2) {
+                    currentTranslateX -= setWidth;
+                    galleryTrack.style.transition = 'none';
+                    updateTransform();
+                    // Re-enable transition after the jump
+                    requestAnimationFrame(() => {
+                        galleryTrack.style.transition = 'transform 0.3s ease-out';
+                    });
+                } else if (currentTranslateX < -setWidth * 1.5) {
+                    currentTranslateX += setWidth;
+                    galleryTrack.style.transition = 'none';
+                    updateTransform();
+                    // Re-enable transition after the jump
+                    requestAnimationFrame(() => {
+                        galleryTrack.style.transition = 'transform 0.3s ease-out';
+                    });
+                }
+            }
+            
+            // Mouse events
+            function handleStart(clientX) {
+                isDragging = true;
+                startX = clientX;
+                startTranslateX = currentTranslateX;
+                galleryTrack.style.cursor = 'grabbing';
+                galleryTrack.style.transition = 'none';
+            }
+            
+            function handleMove(clientX) {
+                if (!isDragging) return;
+                
+                const deltaX = clientX - startX;
+                currentTranslateX = startTranslateX + deltaX;
+                updateTransform();
+                
+                // Check bounds during drag to prevent going too far
+                const itemWidth = 480;
+                const itemCount = originalItems.length;
+                const setWidth = itemCount * itemWidth;
+                
+                // Seamlessly loop during drag
+                if (currentTranslateX > setWidth / 2) {
+                    currentTranslateX -= setWidth;
+                    startTranslateX -= setWidth;
+                } else if (currentTranslateX < -setWidth * 1.5) {
+                    currentTranslateX += setWidth;
+                    startTranslateX += setWidth;
+                }
+            }
+            
+            function handleEnd() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                galleryTrack.style.cursor = 'grab';
+                
+                // Only check bounds, don't force transition here
+                // The bounds check will handle transition appropriately
+                checkBounds();
+            }
+            
+            // Mouse events
+            galleryTrack.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                handleStart(e.clientX);
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                handleMove(e.clientX);
+            });
+            
+            document.addEventListener('mouseup', handleEnd);
+            
+            // Touch events for mobile
+            galleryTrack.addEventListener('touchstart', (e) => {
+                handleStart(e.touches[0].clientX);
+            });
+            
+            galleryTrack.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                handleMove(e.touches[0].clientX);
+            });
+            
+            galleryTrack.addEventListener('touchend', handleEnd);
+            
+            // Prevent context menu on long press
+            galleryTrack.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+            
+            // Handle window resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    setupInfiniteScroll();
+                }, 250);
+            });
+            
+            // Initialize
+            setupInfiniteScroll();
+            galleryTrack.style.cursor = 'grab';
         });
-      }
-      setNoSnapJump(slideW()); // go to first real slide
-
-      // Stable index calc that tolerates fractional pixels
-      function currentIndex() {
-        const w = slideW();
-        return Math.floor((slider.scrollLeft + w / 2) / w);
-      }
-
-      // Debounced wrap logic with a guard that lasts through snap restore
-      let wrapGuard = false;
-      let t;
-      slider.addEventListener('scroll', () => {
-        if (wrapGuard) return;
-        clearTimeout(t);
-        t = setTimeout(() => {
-          const idx = currentIndex();
-          const totalWithGhosts = slideCount + 2;
-
-          if (idx === totalWithGhosts - 1) {
-            // trailing ghost -> jump to first real
-            wrapGuard = true;
-            setNoSnapJump(slideW() * 1);
-            setTimeout(() => (wrapGuard = false), 180); // give snap time to settle
-          } else if (idx === 0) {
-            // leading ghost -> jump to last real
-            wrapGuard = true;
-            setNoSnapJump(slideW() * slideCount);
-            setTimeout(() => (wrapGuard = false), 180);
-          }
-          updateDots();
-        }, 100); // slightly longer debounce reduces edge flicker
-      }, { passive: true });
-
-      // Dots
-      function goToReal(i) {
-        slider.scrollTo({ left: slideW() * (i + 1), behavior: 'smooth' });
-      }
-      function updateDots() {
-        const idx = currentIndex();
-        let real = idx - 1;
-        if (real < 0) real = slideCount - 1;
-        if (real >= slideCount) real = 0;
-        [...dots.children].forEach((a, i) => {
-          a.style.opacity = i === real ? '1' : '0.5';
-        });
-      }
-      dots?.addEventListener('click', (e) => {
-        if (e.target.tagName !== 'A') return;
-        e.preventDefault();
-        const i = [...dots.children].indexOf(e.target);
-        if (i >= 0) goToReal(i);
-      });
-
-      // Keep position on resize
-      window.addEventListener('resize', () => {
-        const real = Math.max(0, Math.min(slideCount - 1, currentIndex() - 1));
-        setNoSnapJump(slideW() * (real + 1));
-        updateDots();
-      });
-
-      // Add drag scrolling functionality
-      let isMouseDown = false;
-      let startX;
-      let scrollLeft;
-
-      slider.addEventListener('mousedown', (e) => {
-        isMouseDown = true;
-        slider.style.cursor = 'grabbing';
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-      });
-
-      slider.addEventListener('mouseleave', () => {
-        isMouseDown = false;
-        slider.style.cursor = 'grab';
-      });
-
-      slider.addEventListener('mouseup', () => {
-        isMouseDown = false;
-        slider.style.cursor = 'grab';
-      });
-
-      slider.addEventListener('mousemove', (e) => {
-        if (!isMouseDown) return;
-        e.preventDefault();
-        const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2;
-        slider.scrollLeft = scrollLeft - walk;
-      });
-
-      // Add touch events for mobile
-      slider.addEventListener('touchstart', (e) => {
-        isMouseDown = true;
-        startX = e.touches[0].pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-      });
-
-      slider.addEventListener('touchend', () => {
-        isMouseDown = false;
-      });
-
-      slider.addEventListener('touchmove', (e) => {
-        if (!isMouseDown) return;
-        e.preventDefault();
-        const x = e.touches[0].pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2;
-        slider.scrollLeft = scrollLeft - walk;
-      });
-
-      // Set initial cursor style
-      slider.style.cursor = 'grab';
-
-      updateDots();
     </script>
-
-  </body>
-
-
-  <footer>
-    <button onclick="location.href='../home/index.html'">
-      Back to Home Page
-    </button>
-  </footer>
+</body>
 </html>
