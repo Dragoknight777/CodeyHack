@@ -18,13 +18,31 @@
         <div class="slider" id="gallery">
           <img id="piano" src="./images/Piano.jpg" alt="Piano">
           <img id="marching_band" src="./images/MarchingBand.jpg" alt="Marching Band">
+          <img id="octet" src="./images/Octet.jpg" alt="Octet">
         </div>
 
         <div class="slider-nav" id="dots">
           <a href="#piano"></a>
           <a href="#marching_band"></a>
+          <a href="#octet"></a>
         </div>
       </div>
+    </section>
+
+    <section class="video-container">
+      <video controls>
+        <source src="./images/piano_recital.MP4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </section>
+
+    <section class="video-container">
+      <iframe src="https://www.youtube.com/embed/EdQCYR10Vbg?si=74AfYT90Cttwml7q" 
+        title="YouTube video player" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        allowfullscreen>
+      </iframe>
     </section>
 
     <script>
@@ -120,6 +138,58 @@
         setNoSnapJump(slideW() * (real + 1));
         updateDots();
       });
+
+      // Add drag scrolling functionality
+      let isMouseDown = false;
+      let startX;
+      let scrollLeft;
+
+      slider.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+
+      slider.addEventListener('mouseleave', () => {
+        isMouseDown = false;
+        slider.style.cursor = 'grab';
+      });
+
+      slider.addEventListener('mouseup', () => {
+        isMouseDown = false;
+        slider.style.cursor = 'grab';
+      });
+
+      slider.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2;
+        slider.scrollLeft = scrollLeft - walk;
+      });
+
+      // Add touch events for mobile
+      slider.addEventListener('touchstart', (e) => {
+        isMouseDown = true;
+        startX = e.touches[0].pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+
+      slider.addEventListener('touchend', () => {
+        isMouseDown = false;
+      });
+
+      slider.addEventListener('touchmove', (e) => {
+        if (!isMouseDown) return;
+        e.preventDefault();
+        const x = e.touches[0].pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2;
+        slider.scrollLeft = scrollLeft - walk;
+      });
+
+      // Set initial cursor style
+      slider.style.cursor = 'grab';
 
       updateDots();
     </script>

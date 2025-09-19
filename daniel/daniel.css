@@ -54,6 +54,8 @@ header, footer {
     flex: 1 0 100%;
     scroll-snap-align: start;
     object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .slider-nav {
@@ -81,4 +83,19 @@ header, footer {
 
 .slider::-webkit-scrollbar {
   display: none;              /* Chrome/Safari/Edge */
+}
+
+.video-container {
+    max-width: 48rem;
+    margin: 2rem auto;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1.5rem 3rem -0.75rem hsla(0, 0%, 0%, 0.25);
+}
+
+.video-container video, .video-container iframe {
+    width: 100%;
+    display: block;
+    aspect-ratio: 16/9;
+    border: none;
 }
