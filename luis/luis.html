@@ -7,15 +7,115 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Kennedy's Page</title>
-    <link rel="stylesheet" href="kennedy.css" />
+    <title>Langdon's Page</title>
+  <link rel="stylesheet" href="luis.css" />
   </head>
   <body>
-    <h1>Kennedy</h1>
-  </body>
-  <footer>
-    <button onclick="location.href='/home/index.html'">
+    <h1>Luis Suarez</h1>
+  <button onclick="location.href='../home/index.html'">
       Back to Home Page
     </button>
-  </footer>
+  <h2>About Me</h2>
+<p>Gurt: Yo. My name is Luis. I really like music and I have been playing guitar since 2018.</p>
+<img src="C:\Users\suare\OneDrive\Desktop\Codeology\Website\CodeyHack\luis\images\IMG_9698.PNG" alt="Description" width="800" />
+<p style="text-align:center;">I started playing guitar right before coming to California, then began playing guitar at church.</p>
+<p style="text-align:center;">I enjoyed playing acoustic guitar and tried teaching myself how to sing but not as good at that</p>
+<div class="image-row">
+  <img src="C:\Users\suare\OneDrive\Desktop\Codeology\Website\CodeyHack\luis\images\IMG_2571.jpg" alt="Description" width="500" />
+  <img src="C:\Users\suare\OneDrive\Desktop\Codeology\Website\CodeyHack\luis\images\IMG_2745.PNG" alt="Description" width="300" />
+</div>
+<p style="text-align:center;">Over the years I've practiced a lot and learned a lot of songs, but just like playing anything so that people sing along</p>
+<img src="C:\Users\suare\OneDrive\Desktop\Codeology\Website\CodeyHack\luis\images\IMG_7989.PNG" alt="Description" width="700" />
+
+<script>
+      const instrumentCount = 6;
+      const instruments = [];
+      const instrumentSize = 80;
+      const instrumentEmojis = ['🎸', '🎻', '🎺', '🎷', '🥁', '🎹'];
+
+      function createInstrument() {
+        const instrument = document.createElement('div');
+        instrument.className = 'floating-instrument';
+        instrument.textContent = instrumentEmojis[Math.floor(Math.random() * instrumentEmojis.length)];
+        instrument.style.fontSize = instrumentSize + 'px';
+        instrument.style.position = 'fixed';
+        instrument.style.zIndex = 100;
+        instrument.style.opacity = 0.85;
+        instrument.style.left = Math.random() * (window.innerWidth - instrumentSize) + 'px';
+        instrument.style.top = Math.random() * (window.innerHeight - instrumentSize) + 'px';
+        instrument.style.userSelect = 'none';
+        instrument.style.pointerEvents = 'none';
+        document.body.appendChild(instrument);
+        
+        instruments.push({
+          el: instrument,
+          x: parseFloat(instrument.style.left),
+          y: parseFloat(instrument.style.top),
+          dx: (Math.random() - 0.5) * 3,
+          dy: (Math.random() - 0.5) * 3,
+          curve: Math.random() * 0.2 - 0.1, // Each instrument gets a unique curve
+          rotation: 0,
+          rotationSpeed: (Math.random() - 0.5) * 2
+        });
+      }
+
+      for (let i = 0; i < instrumentCount; i++) createInstrument();
+
+      function animateInstruments() {
+        instruments.forEach(instrument => {
+          // Fluctuate acceleration randomly in both x and y directions
+          instrument.curveX = instrument.curveX || (Math.random() * 0.2 - 0.1);
+          instrument.curveY = instrument.curveY || (Math.random() * 0.2 - 0.1);
+          instrument.curveX += (Math.random() - 0.5) * 0.05;
+          instrument.curveY += (Math.random() - 0.5) * 0.05;
+          instrument.dx += instrument.curveX;
+          instrument.dy += instrument.curveY;
+          
+          // Limit speed
+          instrument.dx = Math.max(Math.min(instrument.dx, 2), -2);
+          instrument.dy = Math.max(Math.min(instrument.dy, 2), -2);
+          instrument.x += instrument.dx;
+          instrument.y += instrument.dy;
+
+          // Add gentle rotation
+          instrument.rotation += instrument.rotationSpeed;
+
+          // Bounce off window edges
+          if (instrument.x <= 0 || instrument.x >= window.innerWidth - instrumentSize) {
+            instrument.dx *= -1;
+            instrument.curveX = Math.random() * 0.2 - 0.1;
+          }
+          if (instrument.y <= 0 || instrument.y >= window.innerHeight - instrumentSize) {
+            instrument.dy *= -1;
+            instrument.curveY = Math.random() * 0.2 - 0.1;
+          }
+
+          instrument.el.style.left = instrument.x + 'px';
+          instrument.el.style.top = instrument.y + 'px';
+          instrument.el.style.transform = `rotate(${instrument.rotation}deg)`;
+        });
+        requestAnimationFrame(animateInstruments);
+      }
+
+      animateInstruments();
+
+      // Add guitar strum effect
+      document.querySelectorAll('.guitar-emoji').forEach(guitar => {
+        guitar.addEventListener('click', () => {
+          // Create a burst of instruments
+          for (let i = 0; i < 3; i++) {
+            setTimeout(() => createInstrument(), i * 150);
+          }
+        });
+      });
+
+      // Window resize handler
+      window.addEventListener('resize', () => {
+        instruments.forEach(instrument => {
+          if (instrument.x > window.innerWidth - instrumentSize) instrument.x = window.innerWidth - instrumentSize;
+          if (instrument.y > window.innerHeight - instrumentSize) instrument.y = window.innerHeight - instrumentSize;
+        });
+      });
+    </script>
+  </body>
 </html>
