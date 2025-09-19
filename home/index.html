@@ -2,27 +2,177 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Home Page</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Team 1</title>
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
     <header>
-      <h1>Group 2 Home Page</h1>
+      <h1>Hackathon Group 1!</h1>
     </header>
-
-    <main>
-      <img src="group2.jpg" class="banner-image" />
-
-      <div class="button-group">
-        <button onclick="location.href='/emily/emily.html'">Emily</button>
-        <button onclick="location.href='/kennedy/kennedy.html'">Kennedy</button>
-        <button onclick="location.href='../langdon/langdon.html'">Langdon</button>
-        <button onclick="location.href='/naisha/naisha.html'">Naisha</button>
-        <button onclick="location.href='/tony/tony.html'">Tony</button>
+    
+    <div class="main-content">
+      <div class="banner" id="banner">
+      <div class="slider" id="slider" style="--quantity: 5">
+        <div class="item" style="--position: 1" data-link="../daniel/daniel.html">
+          <img src="./images/daniel.jpg" alt="daniel"/>
+        </div>
+        <div class="item" style="--position: 2" data-link="../langdon/langdon.html">
+          <img src="./images/langdon.jpg" alt="langdon"/>
+        </div>
+        <div class="item" style="--position: 3" data-link="../adrienne/adrienne.html">
+          <img src="./images/adrienne.jpg" alt="adrienne"/>
+        </div>
+        <div class="item" style="--position: 4" data-link="../catherine/catherine.html">
+          <img src="./images/catherine.jpg" alt="catherine"/>
+        </div>
+        <div class="item" style="--position: 5" data-link="../luis/luis.html">
+          <img src="./images/catherine.jpg" alt="luis"/>
+        </div>
       </div>
-    </main>
+      
+      <div class="instructions">
+        Drag to rotate • Click an image to visit
+      </div>
+    </div>
 
     <footer></footer>
+
+    <script>
+      const banner = document.getElementById('banner');
+      const slider = document.getElementById('slider');
+      const items = document.querySelectorAll('.item');
+      
+      let isDragging = false;
+      let startX = 0;
+      let currentRotation = 0;
+      let lastRotation = 0;
+
+      // Mouse events
+      banner.addEventListener('mousedown', startDrag);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', endDrag);
+
+      // Touch events for mobile
+      banner.addEventListener('touchstart', handleTouchStart);
+      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('touchend', endDrag);
+
+      // Click events for images
+      items.forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (!isDragging) {
+            const link = item.getAttribute('data-link');
+            if (link) {
+              window.location.href = link;
+            }
+          }
+        });
+      });
+
+      function startDrag(e) {
+        isDragging = true;
+        startX = e.clientX;
+        banner.style.cursor = 'grabbing';
+      }
+
+      function drag(e) {
+        if (!isDragging) return;
+        
+        const deltaX = e.clientX - startX;
+        const rotationSpeed = 0.2;
+        currentRotation = lastRotation + (deltaX * rotationSpeed);
+        
+        updateSliderRotation();
+      }
+
+      function endDrag() {
+        if (isDragging) {
+          isDragging = false;
+          snapToNearest();
+          banner.style.cursor = 'grab';
+        }
+      }
+
+      function snapToNearest() {
+        const itemCount = items.length; // Dynamically get the number of items
+        const degreesPerItem = 360 / itemCount; // Degrees per item based on actual count
+        
+        // Normalize rotation to 0-360 range
+        let normalizedRotation = ((currentRotation % 360) + 360) % 360;
+        
+        // Find the nearest snap position
+        const nearestPosition = Math.round(normalizedRotation / degreesPerItem) * degreesPerItem;
+        
+        // Calculate the shortest path to the snap position
+        let targetRotation = currentRotation + (nearestPosition - normalizedRotation);
+        
+        // If the snap would be more than 180 degrees, go the other way
+        if (Math.abs(nearestPosition - normalizedRotation) > 180) {
+          if (nearestPosition > normalizedRotation) {
+            targetRotation = currentRotation - (360 - (nearestPosition - normalizedRotation));
+          } else {
+            targetRotation = currentRotation + (360 - (normalizedRotation - nearestPosition));
+          }
+        }
+        
+        // Animate to the snap position
+        animateToRotation(targetRotation);
+      }
+
+      function animateToRotation(targetRotation) {
+        const startRotation = currentRotation;
+        const rotationDifference = targetRotation - startRotation;
+        const duration = 300; // milliseconds
+        const startTime = performance.now();
+        
+        function animate(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // Easing function for smooth animation (ease-out)
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          
+          currentRotation = startRotation + (rotationDifference * easeOut);
+          updateSliderRotation();
+          
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            // Ensure we end exactly at the target
+            currentRotation = targetRotation;
+            lastRotation = currentRotation;
+            updateSliderRotation();
+          }
+        }
+        
+        requestAnimationFrame(animate);
+      }
+
+      function handleTouchStart(e) {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+      }
+
+      function handleTouchMove(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const deltaX = e.touches[0].clientX - startX;
+        const rotationSpeed = 0.2;
+        currentRotation = lastRotation + (deltaX * rotationSpeed);
+        
+        updateSliderRotation();
+      }
+
+      function updateSliderRotation() {
+        slider.style.transform = `perspective(1000px) rotateY(${currentRotation}deg)`;
+      }
+
+      // Prevent context menu on right click
+      banner.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+      });
+    </script>
   </body>
 </html>
