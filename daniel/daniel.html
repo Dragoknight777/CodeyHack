@@ -7,14 +7,128 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Emily's Page</title>
-    <link rel="stylesheet" href="emily.css" />
+    <title>Daniel's Page</title>
+    <link rel="stylesheet" href="daniel.css" />
   </head>
   <body>
-    <h1>Emily</h1>
+    <h1>Daniel</h1>
+
+    <section class="container">
+      <div class="slider-wrapper">
+        <div class="slider" id="gallery">
+          <img id="piano" src="./images/Piano.jpg" alt="Piano">
+          <img id="marching_band" src="./images/MarchingBand.jpg" alt="Marching Band">
+        </div>
+
+        <div class="slider-nav" id="dots">
+          <a href="#piano"></a>
+          <a href="#marching_band"></a>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const slider = document.getElementById('gallery');
+      const dots   = document.getElementById('dots');
+
+      // ---- ghost slides (yours) ----
+      const originals = Array.from(slider.children);
+      const firstReal = originals[0].cloneNode(true);
+      const lastReal  = originals[originals.length - 1].cloneNode(true);
+      firstReal.removeAttribute('id');
+      lastReal.removeAttribute('id');
+      firstReal.classList.add('ghost');
+      lastReal.classList.add('ghost');
+      slider.insertBefore(lastReal, slider.firstChild);
+      slider.appendChild(firstReal);
+
+      // Width of one slide; recompute on resize
+      const slideW = () => slider.clientWidth;
+      const slideCount = originals.length;
+
+      // Start at first real slide (index 1 counting the leading ghost)
+      function setNoSnapJump(leftPx) {
+        const prevSnap = slider.style.scrollSnapType;
+        const prevBeh  = slider.style.scrollBehavior;
+        slider.style.scrollSnapType = 'none';
+        slider.style.scrollBehavior = 'auto';
+        slider.scrollLeft = leftPx;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            slider.style.scrollSnapType = prevSnap || 'x mandatory';
+            slider.style.scrollBehavior = prevBeh  || 'smooth';
+            if (typeof after === 'function') after();
+          });
+        });
+      }
+      setNoSnapJump(slideW()); // go to first real slide
+
+      // Stable index calc that tolerates fractional pixels
+      function currentIndex() {
+        const w = slideW();
+        return Math.floor((slider.scrollLeft + w / 2) / w);
+      }
+
+      // Debounced wrap logic with a guard that lasts through snap restore
+      let wrapGuard = false;
+      let t;
+      slider.addEventListener('scroll', () => {
+        if (wrapGuard) return;
+        clearTimeout(t);
+        t = setTimeout(() => {
+          const idx = currentIndex();
+          const totalWithGhosts = slideCount + 2;
+
+          if (idx === totalWithGhosts - 1) {
+            // trailing ghost -> jump to first real
+            wrapGuard = true;
+            setNoSnapJump(slideW() * 1);
+            setTimeout(() => (wrapGuard = false), 180); // give snap time to settle
+          } else if (idx === 0) {
+            // leading ghost -> jump to last real
+            wrapGuard = true;
+            setNoSnapJump(slideW() * slideCount);
+            setTimeout(() => (wrapGuard = false), 180);
+          }
+          updateDots();
+        }, 100); // slightly longer debounce reduces edge flicker
+      }, { passive: true });
+
+      // Dots
+      function goToReal(i) {
+        slider.scrollTo({ left: slideW() * (i + 1), behavior: 'smooth' });
+      }
+      function updateDots() {
+        const idx = currentIndex();
+        let real = idx - 1;
+        if (real < 0) real = slideCount - 1;
+        if (real >= slideCount) real = 0;
+        [...dots.children].forEach((a, i) => {
+          a.style.opacity = i === real ? '1' : '0.5';
+        });
+      }
+      dots?.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'A') return;
+        e.preventDefault();
+        const i = [...dots.children].indexOf(e.target);
+        if (i >= 0) goToReal(i);
+      });
+
+      // Keep position on resize
+      window.addEventListener('resize', () => {
+        const real = Math.max(0, Math.min(slideCount - 1, currentIndex() - 1));
+        setNoSnapJump(slideW() * (real + 1));
+        updateDots();
+      });
+
+      updateDots();
+    </script>
+
   </body>
+
+
   <footer>
-    <button onclick="location.href='/home/index.html'">
+    <button onclick="location.href='../home/index.html'">
       Back to Home Page
     </button>
   </footer>
