@@ -4,10 +4,15 @@ body {
   background: radial-gradient(circle, #ffd1d9 50%, #ffaed7 100%);
 }
 button {
-  color: #ff1493;  
+  color: #ffe2f1;
+  text-shadow:
+    2px 2px 0 #ff94ca,
+    4px 4px 0 #ff51ae;  
   background-color: #fff;
   border: 1px solid #ff1493; 
   text-align: center;
+  font-size: 1.2rem;
+  padding: 10px 20px; 
   font-family: 'Chewy';
 }
 
@@ -46,8 +51,9 @@ button {
 
 .normal-text {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
-  color: white;
   font-weight: bold;
-  text-shadow: 1px 1px 3px rgba(247, 136, 193, 0);
+  color: #fff;
+  text-shadow:
+    2px 2px 0 #fba5d0;
   margin: 40px;
 }
