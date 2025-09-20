@@ -37,7 +37,27 @@ h1, h2, h3 {
 
 .btn:hover {
   background-color: #00bf
-}
-p1 {
+} 
+.standard-img {
+      width: 300px;          /* fixed width */
+      height: 200px;         /* fixed height */
+      object-fit: cover;     /* crop so it fills the box without distortion */
+      display: block;        /* removes extra bottom gap */
+      border-radius: 12px;   /* optional rounded corners */
+      transition: transform 0.3s ease; /* smooth hover animation */
+    }
 
+    /* Hover effect: enlarge slightly */
+    .standard-img:hover {
+      transform: scale(1.1);
+    }
+.image-row {
+  display: flex;          /* puts figures in a row */
+  justify-content: center; /* center the whole row */
+  gap: 20px;              /* space between the two figures */
+  flex-wrap: wrap;        /* allows wrapping on small screens */
+}
+
+.image-row figure {
+  text-align: center;     /* center captions under images */
 }
