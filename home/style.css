@@ -9,7 +9,7 @@ body {
 }
 
 .main-content {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('./images/group1.jpg');
+    background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('https://srnfdwiyevuhvqxitrmd.supabase.co/storage/v1/object/public/codeyhackimages/group1.jpg');
     background-size: cover;
     background-position: top;
     background-attachment: fixed;
